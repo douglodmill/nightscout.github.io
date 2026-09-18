@@ -158,7 +158,7 @@ Using the arrow keys, you can navigate up, down, left, and right. Use the down a
 Next, go down one to `API_SECRET` and put in a password that is at least 12 characters in length. Make sure to note this down as this will be used to access the Nightscout site. Navigate down again to `DISPLAY_UNITS` and change this to `mmol` if that is what you use, otherwise leave that unchanged. 
 
 
-Next, you'll need to put in your CGM credentials. Depending on what service you're using, you'll need to uncomment and put in the proper credentials. To uncomment, just remove the `#`'s from the line of text. For any CGM where you're using Dexcom Share, you'll use Dexcom. Medtronic, use Medtronic, and if using xDrip, use xDrip. [Here](https://nightscout.pro/en_us/knowledge-base/supported-devices-and-compatibility/) is the CGM list. 
+Next, you'll need to put in your CGM credentials. Depending on what service you're using, you'll need to uncomment and put in the proper credentials. To uncomment, just remove the `#`'s from the line of text. For any CGM where you're using Dexcom Share, you'll use the Dexcom Share lines (the `CONNECT_*` variables of the `connect` plugin). Medtronic, use Medtronic, and if using xDrip, use xDrip. [Here](https://nightscout.pro/en_us/knowledge-base/supported-devices-and-compatibility/) is the CGM list. 
 
 NOTE: Anything with Jugguco or Diabox I am not going over. Those work by having the services upload to Nightscout, and thus no config options are needed inside the Nightscout setup. You'll need to look at their specific documentation on how to set it up.
 

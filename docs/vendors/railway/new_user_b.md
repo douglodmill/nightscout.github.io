@@ -68,20 +68,20 @@ g) At **Step 3** you created your database and came back with a MONGODB_URI stri
 
 </br>
 
-**Dexcom Bridge**
+**Dexcom Share**
 
-h) If you use [Dexcom `bridge`](/troubleshoot/dexcom_bridge/) you need to configure these two variables with your Dexcom credentials:
+h) If you use [Dexcom Share](/troubleshoot/dexcom_bridge/) as a data source you need to configure the `connect` plugin variables with your Dexcom credentials: `CONNECT_SOURCE` set to `dexcomshare`, `CONNECT_SHARE_ACCOUNT_NAME` and `CONNECT_SHARE_PASSWORD`.
 
 <img src="/vendors/railway/img/Railway33.png" width="600px" /></br>
 
 <img src="/vendors/railway/img/Railway34.png" width="600px" /></br>
 
-If you're using Dexcom Share in the US you should put **US**, in **any other case it must be EU**.  
-If you don't see it proposed at this point you'll need to **browse the list below to find it and modify it**.
+If your Dexcom account is outside the US, also add `CONNECT_SHARE_REGION` set to `ous`. Don't add it for a US account.  
+If you don't see these variables proposed at this point you'll need to **browse the list below to find them, or add them**. The `BRIDGE_*` variables you may see in the list belong to the deprecated `bridge` plugin: leave them empty.
 
 <img src="/vendors/railway/img/Railway36.png" width="600px" /></br>
 
-**Remember to add `bridge` at the end of the `enable` variable in the list below.**
+**Remember to add `connect` at the end of the `enable` variable in the list below.**
 
 </br>
 
@@ -92,7 +92,7 @@ The most common error on initial Nightscout setups is that people incorrectly us
 
 ```{admonition} Password
 :class: note
-*Some people have had problems with their bridge connecting when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
+*Some people have had problems connecting to Dexcom Share when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
 ```
 
 ```{hint}
@@ -129,7 +129,7 @@ If you want your site to be visible to anybody leave it as `readable`.
 A common list of [`enable`](enable) variables is predefined, you can change them if you know why.  
 It's recommended that you leave them like this for now.
 
-Just remember to add `bridge` at the end if your get your BG values from Dexcom Share.
+Just remember to add `connect` at the end if you get your BG values from Dexcom Share.
 
 <img src="/vendors/railway/img/Railway14.png" width="600px" /></br>
 

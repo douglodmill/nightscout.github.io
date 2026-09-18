@@ -217,10 +217,10 @@ The API_SECRET is the **main password allowing full access to your Nightscout si
 
 </br>
 
-f) If you want to link your Dexcom Share account as a data source, complete the following lines:
+f) The deploy form still shows the `BRIDGE_USER_NAME`, `BRIDGE_PASSWORD` and `BRIDGE_SERVER` fields of the deprecated `bridge` plugin: **leave them empty**. If you want to link your Dexcom Share account as a data source, add these config vars once your site is deployed (see [here](#editing-config-vars-in-heroku)): `CONNECT_SOURCE` set to `dexcomshare`, `CONNECT_SHARE_ACCOUNT_NAME` and `CONNECT_SHARE_PASSWORD` with your Dexcom credentials, and `CONNECT_SHARE_REGION` set to `ous` if your Dexcom account is outside the US.
 
 ```{note}
- If you use a DIY closed loop system it is recommended that you let it upload to Nightscout instead of importing using Dexcom Share and the `bridge` plugin.
+ If you use a DIY closed loop system it is recommended that you let it upload to Nightscout instead of importing using Dexcom Share and the `connect` plugin.
 ```
 
   <img src="/vendors/heroku/img/NewNS35.png" width="600px" />
@@ -234,7 +234,7 @@ The most common error on initial Nightscout setups is that people incorrectly us
 
 ```{admonition} Password
 :class: note
-*Some people have had problems with their bridge connecting when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
+*Some people have had problems connecting to Dexcom Share when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
 ```
 
 ```{hint}
@@ -261,9 +261,9 @@ h) In `ENABLE`, copy and paste the following words (separated by a space) so tha
 
 `careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors`
 
-**If you are using your Dexcom share account as a data source** also add `bridge` at the end, after a space like this:
+**If you are using your Dexcom Share account as a data source** also add `connect` at the end, after a space like this:
 
-`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors bridge`
+`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors connect`
 
 <img src="/vendors/heroku/img/NewNS38.png" width="500px" />
 
@@ -374,7 +374,7 @@ If an app fails and crashes at startup (database full), if you entered wrong cre
 ```
 
 This is necessary if you don't have an uploader sending data to Nightscout, or a follower polling data from it.  
-For example using the bridge plugin.
+For example using the `connect` plugin with Dexcom Share.
 
 - You can use monitoring webapps like Uptime Robot, New Relic, ...
 

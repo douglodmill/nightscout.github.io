@@ -31,10 +31,10 @@ If you are using a Dexcom sensor connected to the Dexcom app on your phone, it w
 If you cannot use Dexcom Share, try xDrip or xDrip4iOS as a bridge to Nightscout.
 ```
 
-For this to work, Nightscout must be configured to use the `bridge` plug-in and will then automatically pull the CGM information directly from the Dexcom servers in real-time.
+For this to work, Nightscout must be configured with the `connect` plugin and its Dexcom Share source (see [here](/uploader/setup.md#dexcom)). Nightscout will then automatically pull the CGM information directly from the Dexcom servers in real-time. The older `bridge` plugin is deprecated.
 
 ```{note}
-If you use a [DIY closed loop system](/nightscout/close_loop) it is recommended that you let it upload to Nightscout instead of importing data using Dexcom Share and the `bridge` plugin.
+If you use a [DIY closed loop system](/nightscout/close_loop) it is recommended that you let it upload to Nightscout instead of importing data using Dexcom Share and the `connect` plugin.
 ```
 
 If you don't want to use the official Dexcom apps, you can use **open-source software** apps for your Dexcom sensor to connect, display, alarm and also upload to Nightscout:

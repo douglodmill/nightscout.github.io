@@ -52,20 +52,20 @@ Click `Add variable` each time to add another one.
 
 </br>
 
-#### Dexcom Bridge
+#### Dexcom Share
 
-f) If you use [Dexcom `bridge`](/troubleshoot/dexcom_bridge/) you need to configure these two variables with your Dexcom credentials:
+f) If you use [Dexcom Share](/troubleshoot/dexcom_bridge/) as a data source you need to configure the `connect` plugin variables with your Dexcom credentials: `CONNECT_SOURCE` set to `dexcomshare`, `CONNECT_SHARE_ACCOUNT_NAME` and `CONNECT_SHARE_PASSWORD`.
 
 <img src="/vendors/northflank/img/Northflank14.png" width="600px" /></br>
 
 <img src="/vendors/northflank/img/Northflank15.png" width="600px" /></br>
 
-If you're using Dexcom Share in the US you should put **US**, in **any other case it must be EU**.  
-If you don't see it proposed at this point you'll need to **browse the list below to find it and modify it**.
+If your Dexcom account is outside the US, also add `CONNECT_SHARE_REGION` set to `ous`. Don't add it for a US account.  
+If you don't see these variables proposed at this point you'll need to **browse the list below to find them, or add them**. The `BRIDGE_*` variables you may see in the list belong to the deprecated `bridge` plugin: leave them empty.
 
 <img src="/vendors/northflank/img/Northflank16.png" width="600px" /></br>
 
-**Remember to add `bridge` at the end of the `enable` variable in the list below.**
+**Remember to add `connect` at the end of the `enable` variable in the list below.**
 
 </br>
 
@@ -76,7 +76,7 @@ The most common error on initial Nightscout setups is that people incorrectly us
 
 ```{admonition} Password
 :class: note
-*Some people have had problems with their bridge connecting when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
+*Some people have had problems connecting to Dexcom Share when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
 ```
 
 ```{hint}
@@ -108,9 +108,9 @@ j) In [`ENABLE`](enable), copy and paste the following words (separated by a spa
 
 `careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors`
 
-**If you are using your Dexcom share account as a data source** also add `bridge` at the end, after a space like this:
+**If you are using your Dexcom Share account as a data source** also add `connect` at the end, after a space like this:
 
-`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors bridge`
+`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors connect`
 
 <img src="/vendors/northflank/img/Northflank20.png" width="600px" /></br>
 

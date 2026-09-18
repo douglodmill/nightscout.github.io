@@ -19,14 +19,15 @@ services:
 # Mandatory information
       TZ: America/Detroit
       API_SECRET: secret
-      ENABLE: careportal sage iage cage iob cob basal upbat devicestatus dbsize cors bridge loop pump bage override
+      ENABLE: careportal sage iage cage iob cob basal upbat devicestatus dbsize cors connect loop pump bage override
       SHOW_PLUGINS: careportal sage iob cob dbsize cors ar2 pump loop cage basal override
       DISPLAY_UNITS: mg/dl
 
-      # Dexcom: DONT UNCOMMENT THIS LINE
-      #BRIDGE_USER_NAME: username
-      #BRIDGE_PASSWORD: password
-      #BRIDGE_SERVER: US
+      # Dexcom Share: DONT UNCOMMENT THIS LINE (the BRIDGE_* variables are deprecated)
+      #CONNECT_SOURCE: dexcomshare
+      #CONNECT_SHARE_ACCOUNT_NAME: username
+      #CONNECT_SHARE_PASSWORD: password
+      #CONNECT_SHARE_REGION: us
 
       # Medtronic: DONT UNCOMMENT THIS LINE
       #MMCONNECT_USER_NAME: username

@@ -31,20 +31,23 @@ MONGODB_URI="mongodb+srv:// CHANGE ME!"
 # If you want Nightscout to get BG readings from Dexcom Share you must enter your account credentials
 #
 
-# Your Dexcom account username to receive CGM data from the Dexcom Share service. Also make sure to include 'bridge' in your ENABLE line.
-BRIDGE_USER_NAME="CHANGE ME!"
+# Use the connect plugin with the Dexcom Share source (the BRIDGE_* variables are deprecated). Also make sure to include 'connect' in your ENABLE line.
+CONNECT_SOURCE="dexcomshare"
 
-# Your Dexcom account password to receive CGM data from the Dexcom Share service. Also make sure to include 'bridge' in your ENABLE line.
-BRIDGE_PASSWORD="CHANGE ME!"
+# Your Dexcom account username to receive CGM data from the Dexcom Share service.
+CONNECT_SHARE_ACCOUNT_NAME="CHANGE ME!"
 
-# If you are bridging from the Dexcom Share service and are anywhere *outside* the US change this to EU. ('US' or 'EU')
-BRIDGE_SERVER="US"
+# Your Dexcom account password to receive CGM data from the Dexcom Share service.
+CONNECT_SHARE_PASSWORD="CHANGE ME!"
+
+# If your Dexcom account is anywhere *outside* the US change this to ous. ('us' or 'ous')
+CONNECT_SHARE_REGION="us"
 
 #
-# The following variables are optional, only make sure to add bridge in ENABLE if you use Dexcom Share as a data source
+# The following variables are optional, only make sure to add connect in ENABLE if you use Dexcom Share as a data source
 #
 
-# Plugins to enable for your site. Must be a space-delimited lower-case list. Include the word 'bridge' here if you are receiving data from the Dexcom Share service.
+# Plugins to enable for your site. Must be a space-delimited lower-case list. Include the word 'connect' here if you are receiving data from the Dexcom Share service.
 ENABLE="careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors"
 
 # The display name for the Nightscout site. Appears in the upper left of the main view. Often set to the name of the CGM wearer.

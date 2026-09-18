@@ -56,28 +56,29 @@ If you don't use Dexcom Share to get your BG data in Nightscout, copy the line b
 
 `careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors`
 
-If you want to use Dexcom Share as a data source copy this one (it includes the keyword `bridge`):
+If you want to use Dexcom Share as a data source copy this one (it includes the keyword `connect`):
 
-`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors bridge`
+`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors connect`
 
 Click OK.
 
 </br>
 
-h) If you want to use Dexcom Share to have your data in Nightscout directly, you will need to add these three variable Names:
+h) If you want to use Dexcom Share to have your data in Nightscout directly, you will need to add these variable Names (the `BRIDGE_*` variables of the deprecated `bridge` plugin are no longer needed):
 
-`BRIDGE_USER_NAME`   Your Dexcom account username to receive CGM data from the Dexcom Share service.  
-`BRIDGE_PASSWORD`     Your Dexcom account password to receive CGM data from the Dexcom Share service.  
-`BRIDGE_SERVER`          US if your Dexcom account is in the US, or, if you are bridging from the Dexcom Share service and are anywhere **outside** the US change this to EU.
+`CONNECT_SOURCE`   `dexcomshare`  
+`CONNECT_SHARE_ACCOUNT_NAME`   Your Dexcom account username to receive CGM data from the Dexcom Share service.  
+`CONNECT_SHARE_PASSWORD`     Your Dexcom account password to receive CGM data from the Dexcom Share service.  
+`CONNECT_SHARE_REGION`          Only if your Dexcom account is anywhere **outside** the US: `ous`. Don't add it for a US account.
 
 !!!note  
-    If you use a DIY closed loop system it is recommended that you let it upload to Nightscout instead of importing using Dexcom Share and the `bridge` plugin.
+    If you use a DIY closed loop system it is recommended that you let it upload to Nightscout instead of importing using Dexcom Share and the `connect` plugin.
 
 <img src="/vendors/azure/img/Azure15.png" width="600px" /></br>
 
 </br>
 
-**Remember to add `bridge` at the end of the `enable` variable in the list below.**
+**Remember to add `connect` at the end of the `enable` variable in the list below.**
 
 </br>
 
@@ -88,7 +89,7 @@ The most common error on initial Nightscout setups is that people incorrectly us
 
 ```{admonition} Password
 :class: note
-*Some people have had problems with their bridge connecting when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
+*Some people have had problems connecting to Dexcom Share when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
 ```
 
 ```{hint}

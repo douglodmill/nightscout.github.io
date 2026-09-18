@@ -66,7 +66,7 @@ You can find it in [Status - Hostname](https://navid200.github.io/xDrip/docs/Nig
 
 ## Dexcom
 
-You need at least one follower to use Nightscout `share` plugin.
+You need at least one follower to receive Dexcom Share data in Nightscout with the `connect` plugin.
 
 ```{hint}
 If you use a DIY closed loop system it is recommended that you let it upload to Nightscout instead of importing data using Dexcom Share and a Nightscout plugin.
@@ -78,33 +78,23 @@ On your master phone, touch the Share icon, enable Sharing. If you have no follo
 
 </br>
 
-```{tab-set}
-
-:::{tab-item} Select Nightscout version ->
-</br>
-:::
-
-:::{tab-item} 14 and previous
-**The `bridge` plugin requires obsolete libraries and will be removed from future Nightscout versions with Node above 16.**</br></br>
-Verify, update or add these variables:</br></br>
-`BRIDGE_USER_NAME`</br>
-`BRIDGE_PASSWORD`</br>
-`BRIDGE_SERVER`</br>
-</br>
-You need to add `bridge` in the `ENABLE` variable. Do not delete other entries, just add `bridge` after a space.
-:::
-
-:::{tab-item} 15
-**The `connect` plugin is under development.**</br></br>
-Verify, update or add these variables:</br></br>
+Verify, update or add these variables in your Nightscout site:</br></br>
 `CONNECT_SOURCE` set to `dexcomshare`</br>
-`CONNECT_SHARE_ACCOUNT_NAME`</br> 
-`CONNECT_SHARE_PASSWORD`</br> 
-`CONNECT_SHARE_REGION` (must be set to `ous` if outside of the US, else don't add this variable)</br>
+`CONNECT_SHARE_ACCOUNT_NAME` your Dexcom account username</br>
+`CONNECT_SHARE_PASSWORD` your Dexcom account password</br>
+`CONNECT_SHARE_REGION` set to `ous` if your Dexcom account is outside the US, else don't add this variable</br>
 </br>
 You need to add `connect` in the `ENABLE` variable. Do not delete other entries, just add `connect` after a space.
-:::
 
+See [here](/nightscout/setup_variables.md#connect-nightscout-connect) for all the `connect` plugin variables.
+
+```{dropdown} Legacy `bridge` plugin (deprecated)
+The `bridge` plugin (Share2Nightscout bridge) is **deprecated**: please consider using the `connect` plugin instead. Since Nightscout 15.0.8, existing `BRIDGE_*` settings are served by Nightscout Connect anyway. Nightscout 14 and older only support `bridge`, with these variables:</br></br>
+`BRIDGE_USER_NAME`</br>
+`BRIDGE_PASSWORD`</br>
+`BRIDGE_SERVER` set to `EU` if outside the US, else leave it empty</br>
+</br>
+and `bridge` in the `ENABLE` variable. To switch to `connect`, follow the [migration steps](/troubleshoot/dexcom_bridge.md#bridge-to-connect).
 ```
 
 </br>
@@ -116,7 +106,7 @@ The most common error on initial Nightscout setups is that people incorrectly us
 
 ```{admonition} Password
 :class: note
-*Some people have had problems with their bridge connecting when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
+*Some people have had problems connecting to Dexcom Share when their Dexcom passwords are entirely numeric. If you have connection issues in that case, try changing your password to something with a mix of numbers and letters.*
 ```
 
 </br>

@@ -116,7 +116,7 @@ The display name for the Nightscout site. Appears in the upper left of the main 
 
 <input type=text id=ENABLE value="careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override speech cors" size=100></br>
 
-Plugins to enable for your site. Must be a space-delimited lower-case list. Include the word `bridge` here if you are receiving data from the Dexcom Share service
+Plugins to enable for your site. Must be a space-delimited lower-case list. Include the word `connect` here if you are receiving data from the Dexcom Share service
 
 **SHOW_PLUGINS**
 
@@ -150,24 +150,26 @@ U value over which the bolus values are rendered on the chart if the `x U and Ov
 
 If you want Nightscout to import directly from Dexcom Share
 
-**BRIDGE_USER_NAME**
+**CONNECT_SHARE_ACCOUNT_NAME**
 
- <input type=text id=BRIDGE_USER_NAME value="" size=40></br>
+ <input type=text id=CONNECT_SHARE_ACCOUNT_NAME value="" size=40></br>
 
-Your Dexcom account username to receive CGM data from the Dexcom Share service. Also make sure to include `bridge` in your ENABLE line.
+Your Dexcom account username to receive CGM data from the Dexcom Share service. Also make sure to include `connect` in your ENABLE line.
 
-**BRIDGE_PASSWORD**
+**CONNECT_SHARE_PASSWORD**
 
-<input type=text id=BRIDGE_PASSWORD value="" size=40></br>
+<input type=text id=CONNECT_SHARE_PASSWORD value="" size=40></br>
 
-Your Dexcom account password to receive CGM data from the Dexcom Share service. Also make sure to include `bridge` in your ENABLE line
+Your Dexcom account password to receive CGM data from the Dexcom Share service. Also make sure to include `connect` in your ENABLE line
 
-**BRIDGE_SERVER**
+**CONNECT_SHARE_REGION**
 
-<select id="BRIDGE_SERVER">
-    <option value="US" selected="selected">US</option>
-    <option value="EU">EU</option></select></br>
-</br>If you are bridging from the Dexcom Share service and are anywhere *outside* the US change this to EU. (`US` or `EU`)
+<select id="CONNECT_SHARE_REGION">
+    <option value="us" selected="selected">us</option>
+    <option value="ous">ous</option></select></br>
+</br>If your Dexcom account is anywhere *outside* the US change this to `ous`. (`us` or `ous`)
+
+`CONNECT_SOURCE` will be set to `dexcomshare` automatically when you fill in your credentials. The `BRIDGE_*` variables of the deprecated `bridge` plugin are no longer proposed: see [here](/troubleshoot/dexcom_bridge.md#bridge-to-connect) to migrate an existing site.
 
 </br>
 
@@ -283,14 +285,14 @@ function Validate()
   else if(s.search(" ")!=-1) { e2 = "Bad API_SECRET: do not use spaces."}
   else if(s.length<12) { e2 = "Bad API_SECRET: too short - minimum 12 characters."}
   document.getElementById("result2").innerHTML = e2;
-  s = document.getElementById("BRIDGE_USER_NAME").value;
-  if(s.length) { s = document.getElementById("BRIDGE_PASSWORD").value;
+  s = document.getElementById("CONNECT_SHARE_ACCOUNT_NAME").value;
+  if(s.length) { s = document.getElementById("CONNECT_SHARE_PASSWORD").value;
   if(s.length) { s = document.getElementById("ENABLE").value;
-  if(s.search("bridge")==-1) { e3 = "Add bridge in ENABLE to get values from Dexcom Share." } } }
-  s = document.getElementById("BRIDGE_USER_NAME").value;
-  if(!s.length) { s = document.getElementById("BRIDGE_PASSWORD").value;
+  if(s.search("connect")==-1) { e3 = "Add connect in ENABLE to get values from Dexcom Share." } } }
+  s = document.getElementById("CONNECT_SHARE_ACCOUNT_NAME").value;
+  if(!s.length) { s = document.getElementById("CONNECT_SHARE_PASSWORD").value;
   if(!s.length) { s = document.getElementById("ENABLE").value;
-  if(s.search("bridge")!=-1) { e3 = "Remove bridge from ENABLE if you don't use Dexcom Share directly to Nightscout." } } }
+  if(s.search("connect")!=-1) { e3 = "Remove connect from ENABLE if you don't use Dexcom Share directly to Nightscout." } } }
   document.getElementById("result3").innerHTML = e3;
   if((e1.length + e2.length + e3.length)<1)
   {
@@ -324,9 +326,6 @@ sel = document.getElementById("ALARM_URGENT_HIGH");
 sel = document.getElementById("ALARM_URGENT_LOW");
   sLine = "ALARM_URGENT_LOW=" + sel.options[sel.selectedIndex].text; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
-sel = document.getElementById("BRIDGE_SERVER");
-  sLine = "BRIDGE_SERVER=" + sel.options[sel.selectedIndex].text; sBuffer = sBuffer + sLine;
-  sBuffer = sBuffer + "\n";
 sel = document.getElementById("DISPLAY_UNITS");
   sLine = "DISPLAY_UNITS=" + sel.options[sel.selectedIndex].text; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
@@ -355,10 +354,17 @@ sLine = "BG_TARGET_TOP=" + document.getElementById("BG_TARGET_TOP").value; sBuff
   sBuffer = sBuffer + "\n";
 sLine = "BOLUS_RENDER_OVER=" + document.getElementById("BOLUS_RENDER_OVER").value; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
-sLine = "BRIDGE_PASSWORD=" + document.getElementById("BRIDGE_PASSWORD").value; sBuffer = sBuffer + sLine;
+if(document.getElementById("CONNECT_SHARE_ACCOUNT_NAME").value.length) {
+sLine = "CONNECT_SOURCE=dexcomshare"; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
-sLine = "BRIDGE_USER_NAME=" + document.getElementById("BRIDGE_USER_NAME").value; sBuffer = sBuffer + sLine;
+sLine = "CONNECT_SHARE_ACCOUNT_NAME=" + document.getElementById("CONNECT_SHARE_ACCOUNT_NAME").value; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
+sLine = "CONNECT_SHARE_PASSWORD=" + document.getElementById("CONNECT_SHARE_PASSWORD").value; sBuffer = sBuffer + sLine;
+  sBuffer = sBuffer + "\n";
+sel = document.getElementById("CONNECT_SHARE_REGION");
+  sLine = "CONNECT_SHARE_REGION=" + sel.options[sel.selectedIndex].text; sBuffer = sBuffer + sLine;
+  sBuffer = sBuffer + "\n";
+}
 sLine = "CUSTOM_TITLE=" + document.getElementById("CUSTOM_TITLE").value; sBuffer = sBuffer + sLine;
   sBuffer = sBuffer + "\n";
 sLine = "ENABLE=" + document.getElementById("ENABLE").value; sBuffer = sBuffer + sLine;

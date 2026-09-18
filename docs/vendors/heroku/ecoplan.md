@@ -94,7 +94,7 @@ If an app fails and crashes at startup (database full), if you entered wrong cre
 ```
 
 This is necessary if you don't have an uploader sending data to Nightscout, or a follower polling data from it.  
-For example using the bridge plugin.
+For example using the `connect` plugin with Dexcom Share.
 
 - You can use monitoring webapps like Uptime Robot, New Relic, ...
 

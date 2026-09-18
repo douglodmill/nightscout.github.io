@@ -159,6 +159,14 @@ Since 15.0.7, the size of the MongoDB connection pool can be tuned. Most install
 
 Nightscout accepts either one document or an array of documents on several legacy API write endpoints. In 15.0.8, array writes to the `entries`, `devicestatus`, `activity`, and `food` endpoints are limited to **10,000 documents per request** so that validation and database work remain bounded. Clients uploading larger backfills to these endpoints must divide them into smaller batches. Other endpoints have their own accepted payload shapes and limits; consult the API documentation exposed by your Nightscout instance.
 
+(debug-logging)=
+
+#### `DEBUG_LOGGING` (`false`)
+
+Since 15.0.9, routine server messages (heartbeats, data reload summaries and Nightscout Connect diagnostics) are no longer written to the logs by default. Set `DEBUG_LOGGING` to `true` to log them while troubleshooting. Warnings, errors and startup messages are always logged.
+
+Restart Nightscout after changing this variable, and set it back to `false` (or remove it) when you are done: verbose logs can quickly exhaust the log quota of hosted platforms like Heroku. This variable does not control the platform's own access logs, nor the logging of every plugin. To enable diagnostics for the Connect plugin only, use `CONNECT_DEBUG` (see [`connect`](#connect-nightscout-connect)).
+
 </br>
 
 ------
@@ -189,8 +197,8 @@ Select which [Plugins](#plugins) to enable for your site, this is the current li
 - `treatmentnotify` (Treatment Notifications)
 - `basal` (Basal Profile)
 - `bolus` (Bolus Rendering)
-- `connect` (Nightscout Connect) - Beta
-- `bridge` (Share2Nightscout bridge) - Deprecated
+- `connect` (Nightscout Connect: Dexcom Share, LibreLinkUp, Glooko, CareLink, another Nightscout site)
+- `bridge` (Share2Nightscout bridge) - Deprecated: use `connect` instead
 - `mmconnect` (MiniMed Connect bridge) - Deprecated: not functional
 - `pump` (Pump Monitoring)
 - `openaps` (OpenAPS)
@@ -207,13 +215,13 @@ Must be a space-delimited, lower-case list.
 
 `careportal basal dbsize`
 
-Include the word `bridge` here if you are receiving data from the Dexcom Share service.
+Include the word `connect` here if you are receiving data from the Dexcom Share service (or another cloud service supported by [Nightscout Connect](#connect-nightscout-connect)), then select the source with the `CONNECT_*` variables. The `bridge` keyword is deprecated.
 
-`careportal basal dbsize bridge`
+`careportal basal dbsize connect`
 
 If you don't want to decide now, add all the followings, you can disable them if you don't need them:
 
-`careportal basal dbsize rawbg iob maker bridge cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override cors`
+`careportal basal dbsize rawbg iob maker cob bwp cage iage sage boluscalc pushover treatmentnotify loop pump profile food openaps bage alexa override cors`
 
 Note: `mmconnect` is not functional (if you want to bridge from the MiniMed CareLink service you will need another device to send data to Nightscout). If you are sending data to CareLink do **NOT** enable `mmconnect`.
 
@@ -883,13 +891,34 @@ or `icicle` (inverted)
 
 #### `connect` ([Nightscout Connect](https://github.com/nightscout/nightscout-connect))
 
-```{note}
-This plugin is **under development**.
+Nightscout's method for synchronizing with common diabetes cloud providers, and the recommended way to get Dexcom Share data into Nightscout. Include `connect` in `ENABLE`, then select one source with `CONNECT_SOURCE`.
+
+- `CONNECT_DEBUG` - Since 15.0.9, Connect diagnostics are quiet by default and follow [`DEBUG_LOGGING`](#debug-logging). Set `CONNECT_DEBUG` to `true` to log Connect diagnostics only, or to `false` to keep Connect quiet while `DEBUG_LOGGING` is enabled. Diagnostics are operation summaries: credentials, sessions and patient records are never logged. Warnings and failures are always logged. Restart Nightscout after changing it.
+
+##### Dexcom Share
+
+If you use the Dexcom app on your phone, this is the way to receive your CGM data in Nightscout (see [here](/uploader/setup.md#dexcom)). Use the following variables (**\*** mandatory):
+
+- `CONNECT_SOURCE` set to `dexcomshare` **\***
+- `CONNECT_SHARE_ACCOUNT_NAME` - Your Dexcom account username. **\***
+- `CONNECT_SHARE_PASSWORD` - Your Dexcom account password. **\***
+- `CONNECT_SHARE_REGION` (`us`) - Set to `ous` if your Dexcom account is outside the US. Leave it unset (or `us`) for a US account. `us` selects the `share2.dexcom.com` server, `ous` the `shareous1.dexcom.com` server.
+- `CONNECT_SHARE_SERVER` - Server domain, set automatically from `CONNECT_SHARE_REGION`. Do not use.
+
+The connector supports newer G7-era account responses as well as older Dexcom Share account IDs.
+
+```{admonition} Numeric credentials
+:class: warning
+A username or password made only of digits (a phone number, a password with leading zeros) is converted to a number by Nightscout and the login fails. See [here](/troubleshoot/dexcom_bridge.md#username-is-a-phone-number).
 ```
 
-Nightscout's methods for synchronizing with common diabetes cloud providers. Include `connect` in `ENABLE`, then select one source with `CONNECT_SOURCE`.
+If your site still uses the deprecated `bridge` plugin, follow the [migration steps](/troubleshoot/dexcom_bridge.md#bridge-to-connect).
 
 ##### Another Nightscout site
+
+```{note}
+Work in progress.
+```
 
 To copy data from another Nightscout site:
 
@@ -898,23 +927,6 @@ To copy data from another Nightscout site:
 - `CONNECT_SOURCE_API_SECRET` - Optional source API secret. Not required when the source is readable or the endpoint contains a token.
 - `CONNECT_SOURCE_COLLECTIONS` (`entries,treatments,devicestatus,profiles`) - Comma-separated collections to copy.
 - `CONNECT_SOURCE_MAX_COUNT` (`1000`) - Maximum records requested per collection at a time.
-
-##### Dexcom Share
-
-To synchronize from Dexcom Share use the following variables (**\*** mandatory):
-
-- `CONNECT_SOURCE` should be `dexcomshare`
-- `CONNECT_SHARE_ACCOUNT_NAME` - Your username for the Share service. **\***
-- `CONNECT_SHARE_PASSWORD` - Your password for the Share service. **\***
-
-- `CONNECT_SHARE_REGION` (us) - `ous` or `us`. ***Note:*** `us` is the default if nothing is provided.
-
-Selecting `us` sets `CONNECT_SHARE_SERVER` to `share2.dexcom.com`.  
-Selecting `ous` here sets `CONNECT_SHARE_SERVER` to `shareous1.dexcom.com`.
-
-- `CONNECT_SHARE_SERVER=` set the server domain to use (do not use, see above: it is set automatically).
-
-The connector supports newer G7-era account responses as well as older Dexcom Share account IDs.
 
 ##### Glooko
 
@@ -960,17 +972,28 @@ LibreLinkUp writes graph readings and the current glucose item so that the newes
 
 #### `bridge` (Share2Nightscout bridge)
 
-Dexcom Share glucose retrieval configured with the established `BRIDGE_*` variables. In Nightscout 15.0.8 and later, compatible Bridge settings use the newer `nightscout-connect` Dexcom Share implementation by default for improved compatibility. The configuration names remain the same.
+```{warning}
+**Deprecated**: please consider using the [`connect`](#connect-nightscout-connect) plugin with the Dexcom Share source instead. The legacy `share2nightscout-bridge` implementation will be retired in a future release. See the [migration steps](/troubleshoot/dexcom_bridge.md#bridge-to-connect).
+```
+
+Dexcom Share glucose retrieval configured with the established `BRIDGE_*` variables. In Nightscout 15.0.8 and later, `BRIDGE_USER_NAME`, `BRIDGE_PASSWORD` and `BRIDGE_SERVER` are handed over to the newer `nightscout-connect` Dexcom Share implementation by default for improved compatibility. The variable names remain the same and `bridge` stays in `ENABLE`: you don't need to add `connect`. Nightscout Connect manages its own polling and retries, so the other `BRIDGE_*` variables below only apply to the legacy implementation.
 
 - `BRIDGE_USER_NAME` - Your username for the Share service. **\***
 - `BRIDGE_PASSWORD` - Your password for the Share service. **\***
+- `BRIDGE_SERVER` - Leave it empty (or don't define it) to fetch data from Dexcom servers in the US. Set it to `EU` if your Dexcom account is outside the US.
+- `DEXCOM_BRIDGE_USE_LEGACY` (`false`) - Set to `true` to force the deprecated `share2nightscout-bridge` implementation while troubleshooting a deployment-specific compatibility problem.
+
+```{warning}
+In Nightscout 15.0.8, any `BRIDGE_SERVER` value other than `EU` is passed to Nightscout Connect as a server hostname. If you set it to `US` and your Dexcom data stopped after updating, empty or remove `BRIDGE_SERVER` and restart your site.
+```
+
+Legacy implementation only (`DEXCOM_BRIDGE_USE_LEGACY=true`):
+
 - `BRIDGE_INTERVAL` (`150000` *2.5 minutes*) - The time (in milliseconds) to wait between each update.
 - `BRIDGE_MAX_COUNT` (`1`) - The number of records to attempt to fetch per update.
 - `BRIDGE_FIRST_FETCH_COUNT` (`3`) - Changes max count during the very first update only.
 - `BRIDGE_MAX_FAILURES` (`3`) - How many failures before giving up.
 - `BRIDGE_MINUTES` (`1400`) - The time window to search for new data per update (the default value is one day in minutes).
-- `BRIDGE_SERVER` (`US`) - Set to `US` to fetch data from Dexcom servers in the US. Set to (`EU`) to fetch from non US servers instead. **\***
-- `DEXCOM_BRIDGE_USE_LEGACY` (`false`) - Set to `true` to force the deprecated `share2nightscout-bridge` implementation while troubleshooting a deployment-specific compatibility problem.
 
 - `OBSCURED` (`bridge`) - Obscure data source when using `bridge` uploader.
 - `OBSCURE_DEVICE_PROVENANCE` (`dexcom-dont-own-my-body-data`) - Self explanatory.

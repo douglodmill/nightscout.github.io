@@ -22,9 +22,11 @@ services:
       SHOW_PLUGINS: careportal sage iob cob dbsize cors ar2
       DISPLAY_UNITS: mg/dl
 
-      #BRIDGE_USER_NAME: username
-      #BRIDGE_PASSWORD: password
-      #BRIDGE_SERVER: EU
+      # Dexcom Share: add connect to ENABLE and uncomment these lines (the BRIDGE_* variables are deprecated)
+      #CONNECT_SOURCE: dexcomshare
+      #CONNECT_SHARE_ACCOUNT_NAME: username
+      #CONNECT_SHARE_PASSWORD: password
+      #CONNECT_SHARE_REGION: ous
 
       AUTH_DEFAULT_ROLES: readable
       NIGHT_MODE: off

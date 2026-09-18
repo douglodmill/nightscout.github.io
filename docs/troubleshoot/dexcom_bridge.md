@@ -3,7 +3,7 @@
 </br>
 
 ```{note}
-Nightscout 15.0.8 and later keep the familiar `BRIDGE_*` configuration but serve compatible Dexcom Share connections through `nightscout-connect` by default. Logs can therefore refer to Connect even when your variables use Bridge names. If a deployment-specific problem begins after upgrading, `DEXCOM_BRIDGE_USE_LEGACY=true` temporarily restores the deprecated `share2nightscout-bridge` implementation while you troubleshoot.
+The recommended way to receive Dexcom Share data in Nightscout is the `connect` plugin with `CONNECT_SOURCE` set to `dexcomshare` (see [here](/uploader/setup.md#dexcom)). The `bridge` plugin (Share2Nightscout bridge) is **deprecated**. Nightscout 15.0.8 and later still accept the legacy `BRIDGE_*` settings but serve them through `nightscout-connect` by default, so logs refer to Connect even when your variables use Bridge names. If a deployment-specific problem begins after upgrading, `DEXCOM_BRIDGE_USE_LEGACY=true` temporarily restores the deprecated `share2nightscout-bridge` implementation while you troubleshoot. See [how to migrate](#bridge-to-connect).
 ```
 
 ## Username and password
@@ -15,9 +15,9 @@ For all others: [https://clarity.dexcom.eu/](https://clarity.dexcom.eu/)
 
 <img src="/troubleshoot/img/DexShare01.png" width="600px" >
 
-In the case you have linked accounts, check you are using the right credentials for the profile you want to `bridge` to Nightscout.
+In the case you have linked accounts, check you are using the right credentials for the profile you want to connect to Nightscout.
 
-**Verify you actually have current data in this profile/account!** You want to put the username and password of the account that has CGM data in `BRIDGE`, this is usually the credentials you are using with the master phone (the one connected to the sensor).
+**Verify you actually have current data in this profile/account!** You want to put the username and password of the account that has CGM data in the `CONNECT_SHARE_*` (or legacy `BRIDGE_*`) variables, this is usually the credentials you are using with the master phone (the one connected to the sensor).
 
 <img src="/troubleshoot/img/DexShare05.png" width="400px" >
 
@@ -39,7 +39,7 @@ Newly created Dexcom users do not have an username but only an email address.
 
 <img src="/troubleshoot/img/DexShare01b.png" width="400px" >
 
-This can be an issue if you want to use `bridge` to have your data directly in Nightscout. Make sure you're using the [latest release](/update/update/) if you experience problems.
+This can be an issue if you want to have your data directly in Nightscout. Make sure you're using the [latest release](/update/update/) if you experience problems.
 
 Common symptoms are:
 
@@ -131,17 +131,40 @@ Variables location will depend on the platform you use:
 
 </br>
 
-1. You must use the same `BRIDGE_PASSWORD` or `BRIDGE_USER_NAME` that your Dexcom mobile app is using.
-2. When using `BRIDGE_*` variables, you must have `bridge` and `careportal` on the `ENABLE` line (you can have other values there, but don't forget these two). When configuring `CONNECT_*` variables directly, enable `connect` instead.
-3. If you are outside the USA, you must add `BRIDGE_SERVER` set to `EU` in Nightscout variables settings.
+1. You must use the same `CONNECT_SHARE_ACCOUNT_NAME` and `CONNECT_SHARE_PASSWORD` that your Dexcom mobile app is using.
+2. `CONNECT_SOURCE` must be `dexcomshare`, and you must have `connect` and `careportal` on the `ENABLE` line (you can have other values there, but don't forget these two).
+3. If you are outside the USA, you must add `CONNECT_SHARE_REGION` set to `ous` in Nightscout variables settings. If you are in the USA, don't add it.
 4. Your `careportal` must be one word in the `ENABLE` line, sometimes autocorrect makes it two words.
 5. If using `mmol`, make sure you have spelled that value correctly in the `DISPLAY_UNITS`.
+6. If you still use the deprecated `bridge` plugin: `bridge` must be on the `ENABLE` line, `BRIDGE_USER_NAME` and `BRIDGE_PASSWORD` must match your Dexcom app, and `BRIDGE_SERVER` must be `EU` outside the USA or empty in the USA (in Nightscout 15.0.8 the value `US` is passed to Nightscout Connect as a server name and no data is received). Consider [migrating to `connect`](#bridge-to-connect).
+
+</br>
+
+(bridge-to-connect)=
+
+### Migrate from the deprecated `bridge` plugin
+
+The `bridge` plugin (Share2Nightscout bridge) is deprecated and its legacy `share2nightscout-bridge` implementation will be retired in a future release. Since Nightscout 15.0.8 your `BRIDGE_*` settings are already served by Nightscout Connect, so switching to the `connect` plugin changes nothing in the data you receive, but keeps your site ready for the retirement.
+
+| Legacy `bridge` | `connect` |
+|---|---|
+| `bridge` in `ENABLE` | `connect` in `ENABLE` |
+| `BRIDGE_USER_NAME` | `CONNECT_SHARE_ACCOUNT_NAME` |
+| `BRIDGE_PASSWORD` | `CONNECT_SHARE_PASSWORD` |
+| `BRIDGE_SERVER` set to `EU` | `CONNECT_SHARE_REGION` set to `ous` |
+| `BRIDGE_SERVER` empty or `US` | nothing (the default region is `us`) |
+| `BRIDGE_INTERVAL`, `BRIDGE_MAX_COUNT`, `BRIDGE_FIRST_FETCH_COUNT`, `BRIDGE_MAX_FAILURES`, `BRIDGE_MINUTES` | nothing (Nightscout Connect manages its own polling and retries) |
+
+1. Add `CONNECT_SOURCE` with the value `dexcomshare`, then the `CONNECT_*` variables listed in the table above.
+2. Replace `bridge` by `connect` in `ENABLE`.
+3. Delete all the `BRIDGE_*` variables, and `DEXCOM_BRIDGE_USE_LEGACY` if you added it.
+4. Restart your site (or wait for the automatic redeploy) and check data is flowing in.
 
 </br>
 
 ### Authentication errors
 
-One thing that can happen if you have an incorrect Dexcom login/password in your Share account settings and/or in your Nightscout `BRIDGE` settings is that Dexcom will lock your account...and you won't see CGM data in Nightscout. If you notice your CGM readings disappeared, but everything else is flowing...  
+One thing that can happen if you have an incorrect Dexcom login/password in your Share account settings and/or in your Nightscout `CONNECT_SHARE_*` settings is that Dexcom will lock your account...and you won't see CGM data in Nightscout. If you notice your CGM readings disappeared, but everything else is flowing...  
 Check your Heroku logs that are viewable by selecting `View Logs` from the drop-down menu underneath the `More` option.  
 
 <img src="/vendors/heroku/img/heroku-logs.png" width="800">
@@ -152,11 +175,17 @@ With Railway they are available selecting your app, then `Deployments` and `View
 
 </br>
 
-Do your logs have "`SSO authentication errors`" like in the red box highlighted above? If you do, then:
+Do your logs have "`SSO authentication errors`" like in the red box highlighted above? With Nightscout 15.0.8 and later, look for `ERROR AUTHENTICATING ACCOUNT` or `nightscout-connect: Dexcom authentication failed` instead. If you do, then:
 
-1. Delete your `BRIDGE` entries within Heroku settings.  Don't delete the variables, just delete the values of `BRIDGE_PASSWORD` and `BRIDGE_USER_NAME`.
+1. Delete your Dexcom credentials within Heroku settings.  Don't delete the variables, just delete the values of `CONNECT_SHARE_PASSWORD` and `CONNECT_SHARE_ACCOUNT_NAME` (or `BRIDGE_PASSWORD` and `BRIDGE_USER_NAME` with the deprecated `bridge` plugin).
 2. Wait 15 minutes and then follow the directions below. It is important to wait 15 minutes: the reason you can't log in right now is that your Dexcom account has a temporary lock from the passwords in the step above being incorrect. The temporary lock will expire after 10-15 minutes of giving the account login a break from the incorrect logins. So, definitely wait or else you'll just keep prolonging the issue.
 
-```{hint} About your Bridge password and user name
+```{hint} About your Dexcom password and user name
 The most common error on initial Nightscout setups is that people incorrectly use an old account or an old password. To test your username and password, go to Dexcom's Clarity page (check [here for USA accounts](https://clarity.dexcom.com) and [here for the others](https://clarity.dexcom.eu)) and try logging in to your Dexcom account. If your account info isn't valid, or you don't see any data in your Clarity account... you need to figure out your actual credentials before moving ahead.
 ```
+
+</br>
+
+### Detailed logs
+
+Since Nightscout 15.0.9, routine Dexcom Share messages are no longer logged by default. If you need to see what the connection is doing, add the variable [`CONNECT_DEBUG`](/nightscout/setup_variables.md#connect-nightscout-connect) set to `true` (or [`DEBUG_LOGGING`](/nightscout/setup_variables.md#debug-logging) for the whole server) and restart your site. Errors and warnings are always logged, even without these variables. Remove them once you are done: verbose logs can exhaust the log quota of hosted platforms like Heroku.
